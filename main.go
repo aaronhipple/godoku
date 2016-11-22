@@ -1,4 +1,4 @@
-package godoku
+package main
 
 import (
 	"encoding/csv"
@@ -27,8 +27,9 @@ func main() {
 	fmt.Println("Given Puzzle:")
 	puzzle.Print()
 
+	puzzle.Solve()
 	fmt.Println("Solved Puzzle:")
-	fmt.Println("NOT YET IMPLEMENTED")
+	puzzle.Print()
 }
 
 func importPuzzle(path string) (puzzle Puzzle, err error) {
