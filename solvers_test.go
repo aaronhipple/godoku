@@ -25,7 +25,6 @@ func TestMarkPuzzle(t *testing.T) {
 // TestSolve tests that the Solve function correctly solves a puzzle.
 func TestSolve(t *testing.T) {
 	p := UnsolvedPuzzle
-
 	p.Solve()
 
 	if !reflect.DeepEqual(p.values, SolvedPuzzle.values) {

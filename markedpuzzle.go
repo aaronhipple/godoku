@@ -1,12 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
+	"sync"
 )
 
 // MarkedPuzzle is a two-dimensional array containing slices of possible values.
 type MarkedPuzzle struct {
 	possibleValues [9][9][]int
+}
+
+func (mp *MarkedPuzzle) Print() {
+	for row := 0; row < 9; row++ {
+		for col := 0; col < 9; col++ {
+			fmt.Printf("%v", mp.possibleValues[row][col])
+		}
+		fmt.Printf("\n")
+	}
 }
 
 // Row returns a single row of the puzzle
@@ -41,15 +52,34 @@ func (mp *MarkedPuzzle) Box(box int) (collection [9]*[]int) {
 
 // StrikeMatches removes possible values when they're excluded by a matched pair elsewhere in the row/column/box.
 func (mp *MarkedPuzzle) StrikeMatches() {
+	var wg sync.WaitGroup
+
 	for i := 0; i < 9; i++ {
-		excludeMatches(mp.Row(i))
+		wg.Add(1)
+		go func(mp *MarkedPuzzle, i int) {
+			defer wg.Done()
+			excludeMatches(mp.Row(i))
+		}(mp, i)
 	}
+	wg.Wait()
+
 	for i := 0; i < 9; i++ {
-		excludeMatches(mp.Column(i))
+		wg.Add(1)
+		go func(mp *MarkedPuzzle, i int) {
+			defer wg.Done()
+			excludeMatches(mp.Column(i))
+		}(mp, i)
 	}
+	wg.Wait()
+
 	for i := 0; i < 9; i++ {
-		excludeMatches(mp.Box(i))
+		wg.Add(1)
+		go func(mp *MarkedPuzzle, i int) {
+			defer wg.Done()
+			excludeMatches(mp.Box(i))
+		}(mp, i)
 	}
+	wg.Wait()
 }
 
 func excludeMatches(collection [9]*[]int) {
